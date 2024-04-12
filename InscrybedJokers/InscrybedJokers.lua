@@ -9,6 +9,31 @@
 
 
 function SMODS.INIT.InscrybedJokers()
+
+    -- Modified Booster Pack Logic
+
+    --[[ local card_openref = Card.open
+    function Card:open()
+        if self.ability.name:find('Buffoon') then
+            if self.ability.set == "Joker" then
+                if self.ability.name == 'Retro Joker' then
+                    local isActive = true
+                    for k, v in ipairs(G.handlist) do
+                        if v.ability.set == 'Joker' and v.edition then
+                            isActive = false
+                        end
+                    end
+                    if isActive then
+                        local edition_rate = 2
+                        local edition = poll_edition('standard_edition'..G.GAME.round_resets.ante, edition_rate, true)
+                        card:set_edition(edition)
+                    end
+                end
+            end
+        end
+        return card_openref(self)
+    end ]]--
+
     -- Beastly Joker
     local beastly_def = {
         ["name"] = "Beastly Joker",
@@ -100,16 +125,18 @@ function SMODS.INIT.InscrybedJokers()
                 card = self
             }
         elseif context.cards_destroyed and not context.blueprint then
+            local value = 0
                 for k, v in ipairs(context.glass_shattered) do
-                    self.ability.extra.current_chips = self.ability.extra.current_chips  + v.base.nominal
+                    value = value + v.base.nominal
                 end
             G.E_MANAGER:add_event(Event({
             func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_chips', vars = {self.ability.extra.current_chips}}}); return true
             end}))
             return
         elseif context.remove_playing_cards and not context.blueprint then
+            local value = 0
                 for k, v in ipairs(context.removed) do
-                    self.ability.extra.current_chips = self.ability.extra.current_chips  + v.base.nominal
+                    value = value + v.base.nominal
                 end
             G.E_MANAGER:add_event(Event({
             func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_chips', vars = {self.ability.extra.current_chips}}}); return true
@@ -170,8 +197,8 @@ function SMODS.INIT.InscrybedJokers()
         ["name"] = "Magickal Joker",
         ["text"] = {
             "Gains {C:mult}+#2#{} Mult if hand played",
-            "contains a {C:spades}Spade{}, a {C:hearts}Heart{},",
-            "a {C:clubs}Club{} and a {C:diamonds}Diamond{} card",
+            "contains {C:spades}Spade{}, {C:hearts}Heart{},",
+            "{C:clubs}Club{} and {C:diamonds}Diamond{} cards",
             "{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)"
         }
     }
@@ -232,13 +259,14 @@ function SMODS.INIT.InscrybedJokers()
             }
         end
     end
+
     -- Mycologists
     local mycologist_def = {
         ["name"] = "Mycologists",
         ["text"] = {
             "If {C:attention}poker hand{} is a",
-            "{C:attention}Pair{}, cards give Mult",
-            "equal to their rank ",
+            "{C:attention}Pair{} or {C:attention}Two Pair{}, cards",
+            "give Mult equal to their rank",
             "when scored."
         }
     }
@@ -249,13 +277,43 @@ function SMODS.INIT.InscrybedJokers()
     j_mycologist:register()
 
     SMODS.Jokers.j_mycologist.calculate = function(self,context)
-        if context.individual and next(context.poker_hands['Pair']) and context.cardarea == G.play then
+        if context.individual and (next(context.poker_hands['Two Pair']) or next(context.poker_hands['Pair'])) and context.cardarea == G.play then
             return {
                 mult = context.other_card.base.nominal,
                 card = self
             }
         end
     end
+
+    --[[ Retro
+    local retro_def = {
+        ["name"] = "Retro Joker",
+        ["text"] = {
+            "{C:attention}Buffoon Packs{} will always",
+            "contain an Editioned Joker"
+        }
+    }
+    
+    local j_retro = SMODS.Joker:new("Retro", "retro", magickal_ability, {x = 0, y = 0}, retro_def, 2, 6, true, true, true, false)
+
+    SMODS.Sprite:new("j_retro", SMODS.findModByID("InscrybedJokers").path, "j_retro.png", 71, 95, "asset_atli"):register();
+    j_retro:register()
+
+    SMODS.Jokers.j_retro.calculate = function(self,context)
+        if context.open_booster and G.STATE == G.STATES.BUFFOON then
+            local isActive = true
+            for k, v in ipairs(G.handlist) do
+                if v.ability.set == 'Joker' and v.edition then
+                    isActive = false
+                end
+            end
+            if isActive then
+                local edition_rate = 2
+                local edition = poll_edition('standard_edition'..G.GAME.round_resets.ante, edition_rate, true)
+                card:set_edition(edition)
+            end
+        end
+    end]]--
 end
 
 ----------------------------------------------
