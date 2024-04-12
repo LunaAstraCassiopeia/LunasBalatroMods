@@ -100,18 +100,16 @@ function SMODS.INIT.InscrybedJokers()
                 card = self
             }
         elseif context.cards_destroyed and not context.blueprint then
-            local value = 0
                 for k, v in ipairs(context.glass_shattered) do
-                    value = value + v.base.nominal
+                    self.ability.extra.current_chips = self.ability.extra.current_chips  + v.base.nominal
                 end
             G.E_MANAGER:add_event(Event({
             func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_chips', vars = {self.ability.extra.current_chips}}}); return true
             end}))
             return
         elseif context.remove_playing_cards and not context.blueprint then
-            local value = 0
                 for k, v in ipairs(context.removed) do
-                    value = value + v.base.nominal
+                    self.ability.extra.current_chips = self.ability.extra.current_chips  + v.base.nominal
                 end
             G.E_MANAGER:add_event(Event({
             func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_chips', vars = {self.ability.extra.current_chips}}}); return true
