@@ -158,7 +158,7 @@ function SMODS.INIT.InscrybedJokers()
     local techno_ability = { 
         mult = 0;
         extra = {
-            mult_mod = 4;
+            mult_mod = 8;
         }
     }
     
