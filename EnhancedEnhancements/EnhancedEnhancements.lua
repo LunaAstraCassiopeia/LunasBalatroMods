@@ -12,9 +12,11 @@ function SMODS.INIT.EnhancedEnhancements()
     local enhancement_mod = SMODS.findModByID("EnhancedEnhancements")
     local sprite_enhancer = SMODS.Sprite:new("centers", enhancement_mod.path, "Enhancedments.png", 71, 95, "asset_atli")
     local card_contrast = SMODS.Sprite:new("cards_2", enhancement_mod.path, "EnhancedContrast.png", 71, 95, "asset_atli")
+    local ui_contrast = SMODS.Sprite:new("ui_2", enhancement_mod.path, "EnhancedUIContrast.png", 71, 95, "asset_atli")
     
     sprite_enhancer:register()
     card_contrast:register()
+    ui_contrast:register()
 end
 
 ----------------------------------------------
