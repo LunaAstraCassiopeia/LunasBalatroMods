@@ -277,7 +277,7 @@ function SMODS.INIT.InscrybedJokers()
     j_mycologist:register()
 
     SMODS.Jokers.j_mycologist.calculate = function(self,context)
-        if context.individual and (next(context.poker_hands['Two Pair']) or next(context.poker_hands['Pair'])) and context.cardarea == G.play then
+        if context.individual and context.cardarea == G.play and context.poker_hands ~= nil and context.poker_hands and (next(context.poker_hands['Two Pair']) or next(context.poker_hands['Pair'])) then
             return {
                 mult = context.other_card.base.nominal,
                 card = self
@@ -314,6 +314,11 @@ function SMODS.INIT.InscrybedJokers()
             end
         end
     end]]--
+
+    -- JokerDisplay Integration
+    if _G["JokerDisplay"] then
+        NFS.load(SMODS.findModByID("InscrybedJokers").path .. "jokerdisplay_integration.lua")()
+    end
 end
 
 ----------------------------------------------
