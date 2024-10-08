@@ -264,7 +264,7 @@ function SMODS.INIT.InscrybedJokers()
     local mycologist_def = {
         ["name"] = "Mycologists",
         ["text"] = {
-            "If {C:attention}poker hand{} is a",
+            "If {C:attention}poker hand{} contains a",
             "{C:attention}Pair{} or {C:attention}Two Pair{}, cards",
             "give Mult equal to their rank",
             "when scored."
