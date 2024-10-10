@@ -114,7 +114,7 @@ function SMODS.INIT.InscrybedJokers()
     end
 
     SMODS.Jokers.j_deathly.calculate = function(self,context)
-        if SMODS.end_calculate_context(context) then
+        if SMODS.end_calculate_context(context) and self.ability.extra.current_chips > 0 then
             return {
                 message = localize {
                     type = 'variable',
@@ -130,9 +130,11 @@ function SMODS.INIT.InscrybedJokers()
                     value = value + v.base.nominal
                 end
             self.ability.extra.current_chips = self.ability.extra.current_chips + value
-            G.E_MANAGER:add_event(Event({
-            func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_chips', vars = {self.ability.extra.current_chips}}}); return true
-            end}))
+            if value > 0 then 
+                G.E_MANAGER:add_event(Event({
+                func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_chips', vars = {self.ability.extra.current_chips}}}); return true
+                end}))
+            end
             return
         elseif context.remove_playing_cards and not context.blueprint then
             local value = 0
@@ -140,9 +142,11 @@ function SMODS.INIT.InscrybedJokers()
                     value = value + v.base.nominal
                 end
             self.ability.extra.current_chips = self.ability.extra.current_chips + value
-            G.E_MANAGER:add_event(Event({
-            func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_chips', vars = {self.ability.extra.current_chips}}}); return true
-            end}))
+            if value > 0 then 
+                G.E_MANAGER:add_event(Event({
+                func = function() card_eval_status_text(self, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_chips', vars = {self.ability.extra.current_chips}}}); return true
+                end}))
+            end
             return
         end
     end
@@ -180,7 +184,7 @@ function SMODS.INIT.InscrybedJokers()
                 message = localize('k_reset'),
                 colour = G.C.RED
             }
-        elseif SMODS.end_calculate_context(context) then
+        elseif SMODS.end_calculate_context(context) and self.ability.extra.current_chips > 0 then
             return {
                 message = localize{type='variable',key='a_mult',vars={self.ability.mult}},
                 mult_mod = self.ability.mult
