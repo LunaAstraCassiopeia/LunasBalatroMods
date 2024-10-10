@@ -7,13 +7,22 @@
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
-function SMODS.INIT.RecastContrast()
 
-    local contrast_mod = SMODS.findModByID("RecastContrast")
-    local card_contrast = SMODS.Sprite:new("cards_2", contrast_mod.path, "EnhancedContrast.png", 71, 95, "asset_atli")
-    
-    card_contrast:register()
-end
+SMODS.Atlas {
+    key = "cards_2",
+    path = "EnhancedContrast.png",
+    px = 71,
+    py = 95,
+    raw_key = true
+}
+
+SMODS.Atlas {
+    key = "ui_2",
+    path = "EnhancedUIContrast.png",
+    px = 18,
+    py = 18,
+    raw_key = true
+}
 
 ----------------------------------------------
 ------------MOD CODE END----------------------
