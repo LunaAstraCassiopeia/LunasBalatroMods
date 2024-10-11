@@ -184,7 +184,7 @@ function SMODS.INIT.InscrybedJokers()
                 message = localize('k_reset'),
                 colour = G.C.RED
             }
-        elseif SMODS.end_calculate_context(context) and self.ability.extra.current_chips > 0 then
+        elseif SMODS.end_calculate_context(context) and self.ability.mult > 0 then
             return {
                 message = localize{type='variable',key='a_mult',vars={self.ability.mult}},
                 mult_mod = self.ability.mult
