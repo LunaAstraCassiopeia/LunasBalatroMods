@@ -209,9 +209,9 @@ function SMODS.INIT.InscrybedJokers()
         }
     }
     local magickal_ability = { 
-        mult = 2;
+        mult = 3;
         extra = {
-            mult_mod = 2;
+            mult_mod = 3;
         }
     }
     
@@ -277,7 +277,7 @@ function SMODS.INIT.InscrybedJokers()
         }
     }
     
-    local j_mycologist = SMODS.Joker:new("Mycologists", "mycologist", magickal_ability, {x = 0, y = 0}, mycologist_def, 1, 5, true, true, true, true)
+    local j_mycologist = SMODS.Joker:new("Mycologists", "mycologist", magickal_ability, {x = 0, y = 0}, mycologist_def, 2, 5, true, true, true, true)
 
     SMODS.Sprite:new("j_mycologist", SMODS.findModByID("InscrybedJokers").path, "j_mycologist.png", 71, 95, "asset_atli"):register();
     j_mycologist:register()
