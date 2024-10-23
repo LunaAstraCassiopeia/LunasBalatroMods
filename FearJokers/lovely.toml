@@ -1,0 +1,87 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# function Blind:stay_flipped (Vandalism 6/7)
+[[patches]]
+[patches.pattern]
+target = 'blind.lua'
+pattern = '''if self.name == 'The Wheel' and pseudorandom(pseudoseed('wheel')) < G.GAME.probabilities.normal/7 then'''
+position = 'before'
+match_indent = true
+payload = '''
+
+if G.jokers ~= nil then
+    for _, v in ipairs(G.jokers.cards) do
+        if v.config.center.key == 'j_tma_BlindSun' and not v.debuff then
+            if (pseudorandom('blindsun'..G.SEED) < G.GAME.probabilities.normal / v.ability.extra.odds) and (G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.DRAW_TO_HAND) then
+                v:calculate_joker({stay_flipped = true})
+                return true
+            end
+        end
+    end
+end
+
+'''
+
+# G.FUNCS.play_cards_from_highlighted (Vandalism 7/7)
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''--check the hand first'''
+position = 'after'
+match_indent = true
+payload = '''
+
+if G.jokers ~= nil then
+    for _, v in ipairs(G.jokers.cards) do
+        if v.config.center.key == 'j_tma_BlindSun' and not v.debuff then
+            v:calculate_joker({play_cards = true})
+        end
+    end
+end
+
+'''
+
+# Jacks as Magic ids
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = '''context\.other_card:get_id\(\) == 11'''
+position = 'at'
+payload = '''(context.other_card:get_id() == 11 or ((context.other_card:get_id() == 12 or context.other_card:get_id() == 13) and next(find_joker('j_tma_Boneturner'))))'''
+
+# Queens as Magic ids
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = '''context\.other_card:get_id\(\) == 12'''
+position = 'at'
+payload = '''(context.other_card:get_id() == 12 or ((context.other_card:get_id() == 11 or context.other_card:get_id() == 13) and next(find_joker('j_tma_Boneturner'))))'''
+
+# Kings as Magic ids
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = '''context\.other_card:get_id\(\) == 13'''
+position = 'at'
+payload = '''(context.other_card:get_id() == 13 or ((context.other_card:get_id() == 12 or context.other_card:get_id() == 11) and next(find_joker('j_tma_Boneturner'))))'''
+
+# Idol Fix
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''context.other_card:get_id() == G.GAME.current_round.idol_card.id'''
+match_indent = true
+position = 'at'
+payload = '''(context.other_card:get_id() == G.GAME.current_round.idol_card.id or ((context.other_card:get_id() == 11 or context.other_card:get_id() == 12 or context.other_card:get_id() == 13) and next(find_joker('j_tma_Boneturner')) and (G.GAME.current_round.idol_card.id == 11 or G.GAME.current_round.idol_card.id == 12 or G.GAME.current_round.idol_card.id == 13) ))'''
+
+# Mail Fix
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''context.other_card:get_id() == G.GAME.current_round.mail_card.id'''
+match_indent = true
+position = 'at'
+payload = '''(context.other_card:get_id() == G.GAME.current_round.mail_card.id or ((context.other_card:get_id() == 11 or context.other_card:get_id() == 12 or context.other_card:get_id() == 13) and next(find_joker('j_tma_Boneturner')) and (G.GAME.current_round.mail_card.id == 11 or G.GAME.current_round.mail_card.id == 12 or G.GAME.current_round.mail_card.id == 13) ))'''
