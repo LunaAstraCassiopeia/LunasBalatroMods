@@ -221,12 +221,13 @@ pattern = '''if self.ability.perishable and self.ability.perish_tally <= 0 then'
 match_indent = true
 position = 'before'
 payload = '''
-
+    if G.consumeables then
     for i=1, #G.consumeables.cards do
         if G.consumeables.cards[i].ability.name == "c_tma_preserve" and G.consumeables.cards[i].ability.extra.active then
             self.debuff = false
             return
         end
+    end
     end
 '''
 
@@ -250,6 +251,7 @@ pattern = '''local nu_chip, nu_mult = G.GAME.selected_back:trigger_effect{contex
 match_indent = true
 position = 'before'
 payload = '''
+            if G.consumeables then
             for i=1, #G.consumeables.cards do
             local _card = G.consumeables.cards[i]
             --calculate the consumeable effects
@@ -281,6 +283,7 @@ payload = '''
             end})
             end
             end
+            end
 '''
 
 # Statements as Jokers, destroying cards
@@ -291,9 +294,11 @@ pattern = '''if scoring_hand[i].ability.name == 'Glass Card' and not scoring_han
 match_indent = true
 position = 'before'
 payload = '''
+            if G.consumeables then
             for c = 1, #G.consumeables.cards do
                 destroyed = G.consumeables.cards[c]:calculate_joker({destroying_card = scoring_hand[i], full_hand = G.play.cards})
                 if destroyed then break end
+            end
             end
 '''
 
@@ -306,6 +311,7 @@ pattern = '''local hand_text_set = false'''
 match_indent = true
 position = 'before'
 payload = '''
+        if G.consumeables then
         for c=1, #G.consumeables.cards do
             --calculate the joker effects
             local effects = eval_card(G.consumeables.cards[c], {cardarea = G.consumeables, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, before = true, callback = function(card, ret) effects = {jokers = ret}
@@ -317,6 +323,7 @@ payload = '''
                 end
             end
             end})
+        end
         end
 '''
 
@@ -330,12 +337,14 @@ pattern = '''for i\= 1, \#G\.jokers\.cards do[ \t] --calculate the joker a'''
 match_indent = true
 position = 'before'
 payload = '''
+        if G.consumeables then
         for c=1, #G.consumeables.cards do
         local effects = eval_card(G.consumeables.cards[c], {cardarea = G.consumeables, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
         if effects.jokers then
             card_eval_status_text(card, 'jokers', nil, percent, nil, effects.jokers)
             percent = percent + percent_delta
         end
+    end
     end
 
 '''
@@ -348,6 +357,7 @@ pattern = '''if G.GAME.round_resets.ante == G.GAME.win_ante and G.GAME.blind:get
 match_indent = true
 position = 'before'
 payload = '''
+            if G.consumeables then
             for c = 1, #G.consumeables.cards do
                 local eval = nil
                 eval = G.consumeables.cards[c]:calculate_joker({end_of_round = true, game_over = game_over, callback = function(card, eval)
@@ -361,6 +371,7 @@ payload = '''
                 G.consumeables.cards[c]:calculate_perishable()
             end})
             end
+            end
 
 '''
 
@@ -372,12 +383,14 @@ pattern = '''local effects = {G.hand.cards[i]:get_end_of_round_effect()}'''
 match_indent = true
 position = 'after'
 payload = '''
+                        if G.consumeables then
                         for c=1, #G.consumeables.cards do
                             --calculate the joker individual card effects
                             local eval = G.consumeables.cards[c]:calculate_joker({cardarea = G.hand, other_card = G.hand.cards[i], individual = true, end_of_round = true, callback = function(card, eval, retrigger)
                             if eval then 
                                 table.insert(effects, eval)
                             end
+                        end
                         end
 
 '''
@@ -389,8 +402,11 @@ target = 'functions/state_events.lua'
 pattern = '''G.GAME.blind:set_blind(G.GAME.round_resets.blind)'''
 match_indent = true
 position = 'after'
-payload = '''for c = 1, #G.consumeables.cards do
+payload = '''
+            if G.consumeables then
+            for c = 1, #G.consumeables.cards do
                 G.consumeables.cards[c]:calculate_joker({setting_blind = true, blind = G.GAME.round_resets.blind})
+            end
             end
 
 '''
@@ -401,7 +417,9 @@ target = 'functions/state_events.lua'
 pattern = '''local removed = false'''
 match_indent = true
 position = 'after'
-payload = '''for c = 1, #G.consumeables.cards do
+payload = '''
+            if G.consumeables then
+            for c = 1, #G.consumeables.cards do
                 local eval = nil
                 eval = G.consumeables.cards[c]:calculate_joker({discard = true, other_card =  G.hand.highlighted[i], full_hand = G.hand.highlighted, callback = function(card, eval, retrigger)
                 if eval then
@@ -409,6 +427,7 @@ payload = '''for c = 1, #G.consumeables.cards do
                     card_eval_status_text(card, 'jokers', nil, 1, nil, eval)
                 end
             end})
+            end
             end
 
 '''
@@ -420,6 +439,7 @@ pattern = '''for j=1,#reps do'''
 match_indent = true
 position = 'before'
 payload = '''
+            if G.consumeables then
                 for c=1, #G.consumeables.cards do
                     --calculate the joker effects
                     local eval = eval_card(G.consumeables.cards[c], {cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = scoring_hand[i], repetition = true, callback = function(card, ret) eval = {jokers = ret}
@@ -429,7 +449,7 @@ payload = '''
                         end
                     end
                 end
-
+            end
 '''
 # Statements as Jokers, removing
 [[patches]]
@@ -488,6 +508,7 @@ pattern = '''local effects = {eval_card(G.hand.cards[i], {cardarea = G.hand, ful
 match_indent = true
 position = 'after'
 payload = '''
+                if G.consumeables then
                 for c=1, #G.consumeables.cards do
                         --calculate the joker individual card effects
                         local eval = G.consumeables.cards[c]:calculate_joker({cardarea = G.hand, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = G.hand.cards[i], individual = true, callback = function(card, eval, retrigger)
@@ -495,6 +516,7 @@ payload = '''
                             mod_percent = true
                             table.insert(effects, eval)
                         end
+                    end
                     end
 
 '''
@@ -506,12 +528,14 @@ pattern = '''scoring_hand[i].lucky_trigger = nil'''
 match_indent = true
 position = 'before'
 payload = '''
+                if G.consumeables then
                 for k=1, #G.consumeables.cards do
                         --calculate the joker individual card effects
                         local eval = G.consumeables.cards[k]:calculate_joker({cardarea = G.play, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, other_card = scoring_hand[i], individual = true, callback = function(card, eval, retrigger)
                         if eval then 
                             table.insert(effects, eval)
                         end
+                    end
                     end
 
 '''
@@ -532,10 +556,11 @@ local effects = eval_card(G.jokers.cards[i], {cardarea = G.jokers, full_hand = G
     end
 
     }) end
+    if G.consumeables then
 for i=1, #G.consumeables.cards do
         --calculate the joker after hand played effects
         local effects = eval_card(G.consumeables.cards[i], {cardarea = G.consumeables, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true, callback = function(card, ret) effects = {jokers = ret}
-
+end
 '''
 
 # Statements as Jokers, 
@@ -548,8 +573,10 @@ position = 'after'
 payload = '''
                 if destroyed then break end
             end
+            if G.consumeables then
             for j = 1, #G.consumeables.cards do
                 destroyed = G.consumeables.cards[j]:calculate_joker({destroying_card = scoring_hand[i], full_hand = G.play.cards, callback = function(card, ret) if ret then destroyed=true end end})
+                end
 '''
 
 # Indulgence discards
@@ -561,12 +588,14 @@ match_indent = true
 position = 'at'
 payload = '''
         local freediscard = false
+        if G.consumeables then
         for i=1, #G.consumeables.cards do
             if G.consumeables.cards[i].ability.name == "c_tma_indulgence" and G.consumeables.cards[i].ability.extra.active and G.GAME.current_round.discards_left <= 0 then
                 ease_dollars(-G.consumeables.cards[i].ability.extra.cost)
                 freediscard = true
                 break
             end
+        end
         end
         if not freediscard then
             ease_discard(-1)
