@@ -99,11 +99,13 @@
     local cool_get_straight = get_straight
     function get_straight(hand)
         local wildrank = false
+	if G.consumeables then
         for i=1, #G.consumeables.cards do
             if G.consumeables.cards[i].ability.name == "c_tma_morph" and G.consumeables.cards[i].ability.extra.active then
                 wildrank = true
             end
         end
+	end
         if not next(SMODS.find_card("j_tma_Boneturner")) and not wildrank then return cool_get_straight(hand) end
         local ret = {}
         local four_fingers = next(SMODS.find_card('Four Fingers'))
@@ -245,11 +247,13 @@
     local cool_get_X_same = get_X_same
     function get_X_same(num, hand, or_more)
         local wildrank = false
+	if G.consumeables then
         for i=1, #G.consumeables.cards do
             if G.consumeables.cards[i].ability.name == "c_tma_morph" and G.consumeables.cards[i].ability.extra.active then
                 wildrank = true
             end
         end
+	end
         if not next(SMODS.find_card("j_tma_Boneturner")) and not wildrank then return cool_get_X_same(num, hand, or_more) end
         local face_replace = next(SMODS.find_card('j_tma_Boneturner'))
         local vals = {}
@@ -306,11 +310,13 @@
 
     local referencedollars = ease_dollars
     function ease_dollars(mod, instant)
+	if G.consumeables then
         for i=1, #G.consumeables.cards do
             if G.consumeables.cards[i].ability.name == "c_tma_paradise" and G.consumeables.cards[i].ability.extra.active and mod >=0 then
                 mod = mod*2
             end
         end
+	end
         return referencedollars(mod, instant)
     end
 
@@ -2336,11 +2342,13 @@
       local GCanDiscard = G.FUNCS.can_discard
       G.FUNCS.can_discard = function(e)
         local indulgence = nil
+	if G.consumeables then
         for i=1, #G.consumeables.cards do
             if G.consumeables.cards[i].ability.name == "c_tma_indulgence" and G.consumeables.cards[i].ability.extra.active then
                 indulgence = G.consumeables.cards[i]
             end
         end
+	end
         if not indulgence then return GCanDiscard(e) end
         if G.GAME.current_round.discards_left <= 0 or #G.hand.highlighted <= 0 then 
             if (G.GAME.dollars >= indulgence.ability.extra.cost) and not (#G.hand.highlighted <= 0) then
